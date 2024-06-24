@@ -124,12 +124,12 @@ def tmp(x):
 
 def get_person_placeholder(age=None, predicted_gender=None):
     if predicted_gender is not None:
-        if age and age <= 15:
+        if age and age < 15:
             person_placeholder = ['boy', 'girl'][predicted_gender == 'Female' or predicted_gender == 1]
         else: # init age > 15 或者根本没有init age
             person_placeholder = ['man','woman'][predicted_gender == 'Female' or predicted_gender == 1]
     else:
-        if age and age <= 15:
+        if age and age < 15:
             person_placeholder = "child"
         else:
             person_placeholder = "person"

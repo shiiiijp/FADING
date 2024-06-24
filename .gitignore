@@ -1,0 +1,11 @@
+.idea
+.DS_Store
+._.DS_Store
+pretrained_model/
+__pycache__/
+experiment/
+outputs/
+*.pyc
+checkpoint/
+assets/
+inputs/

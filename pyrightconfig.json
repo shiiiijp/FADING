@@ -1,0 +1,14 @@
+{
+    "exclude": [
+      "**/data",
+      "**/.crash_reports",
+      "**/runs",
+      "**/wandb",
+      "**/notebooks",
+      "**/models",
+      ".git",
+      "experiments/",
+      "outputs/",
+      "pretrained_models/",
+    ]
+}

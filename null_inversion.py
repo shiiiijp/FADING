@@ -6,6 +6,7 @@ import torch.nn.functional as nnf
 import numpy as np
 from torch.optim.adam import Adam
 from PIL import Image
+from torchvision import transforms
 
 import FADING_util.ptp_utils as ptp_utils
 
@@ -17,10 +18,23 @@ MAX_NUM_WORDS = 77
 device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device('cpu')
 
 
+def tensor_to_pil(tensor):
+    inv_normalize = transforms.Normalize(
+        mean=[-1, -1, -1],
+        std=[2, 2, 2]
+    )
+    tensor = inv_normalize(tensor)
+    
+    transform_to_pil = transforms.ToPILImage()
+    pil_image = transform_to_pil(tensor)
+    return pil_image
 
 def load_512(image_path, left=0, right=0, top=0, bottom=0):
     if type(image_path) is str:
         image = np.array(Image.open(image_path))[:, :, :3]
+    elif isinstance(image_path, torch.Tensor):
+        pil_image = tensor_to_pil(image_path)
+        image = np.array(pil_image)[:, :, :3]
     else:
         image = image_path
     h, w, c = image.shape
@@ -183,11 +197,11 @@ class NullInversion:
         bar.close()
         return uncond_embeddings_list
 
-    def invert(self, image_path: str, prompt: str, offsets=(0, 0, 0, 0), num_inner_steps=10, early_stop_epsilon=1e-5,
+    def invert(self, image, prompt: str, offsets=(0, 0, 0, 0), num_inner_steps=10, early_stop_epsilon=1e-5,
                verbose=False):
         self.init_prompt(prompt)
         ptp_utils.register_attention_control(self.model, None)
-        image_gt = load_512(image_path, *offsets)
+        image_gt = load_512(image, *offsets)
         if verbose:
             print("DDIM inversion...")
         image_rec, ddim_latents = self.ddim_inversion(image_gt)
